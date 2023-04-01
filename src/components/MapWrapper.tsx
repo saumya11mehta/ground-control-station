@@ -11,11 +11,8 @@ import OSM,{ ATTRIBUTION } from 'ol/source/OSM'
 import { transform } from 'ol/proj'
 import { Coordinate } from 'ol/coordinate';
 import Geometry from 'ol/geom/Geometry';
-import { MapWrapperType } from '@/types/types';
 import { takeOffPlanAtom , waypointPlanAtom , routesAtom, stylesAtom, featuresAtom} from "../atoms/atoms";
 import { useAtom, useAtomValue } from 'jotai';
-import Style from 'ol/style/Style';
-import Fill from 'ol/style/Fill';
 
 function MapWrapper() {
 

@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import Map from 'ol/Map';
 import MapWrapper  from '../../components/MapWrapper';
 import MainPanel  from '../../components/MainPanel';
 import FlyPanel  from '../../components/FlyPanel';
@@ -8,7 +7,7 @@ import Feature from 'ol/Feature';
 import { Geometry, Point } from 'ol/geom';
 import Polyline from 'ol/format/Polyline';
 import { routesAtom,featuresAtom,stylesAtom, polylineAtom } from "../../atoms/atoms";
-import { atom, useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import Style from 'ol/style/Style';
 import CircleStyle from 'ol/style/Circle';
 import Fill from 'ol/style/Fill';
@@ -33,7 +32,6 @@ export default function MapPage() {
 
     //add to feature data 
     const addPolylineFeatureElement = useCallback((data: Feature<Geometry>) => {
-      ;
       setFeatures((prevFeatures)=>{
         let prevFeat = removePolylineFeatureElement(prevFeatures)
         return [...prevFeat,data];
