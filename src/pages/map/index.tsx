@@ -13,6 +13,8 @@ import CircleStyle from 'ol/style/Circle';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
+import LiveViewWidget from '@/components/LiveViewWidget';
+import RobotControlWidget from '@/components/RobotControlWidget';
 
 
 export default function MapPage() {
@@ -129,7 +131,9 @@ export default function MapPage() {
       <div className="flex flex-col h-screen">
         <MainPanel/>
         <FlyPanel/>
-        <MapWrapper />
+        <RobotControlWidget/>
+        <MapWrapper/>
+        <LiveViewWidget/>
       </div>
     </>
   )
