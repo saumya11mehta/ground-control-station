@@ -13,6 +13,10 @@ import { Coordinate } from 'ol/coordinate';
 import Geometry from 'ol/geom/Geometry';
 import { takeOffPlanAtom , waypointPlanAtom , routesAtom, stylesAtom, featuresAtom} from "../atoms/atoms";
 import { useAtom, useAtomValue } from 'jotai';
+import { Feature } from 'ol';
+import { Point } from 'ol/geom';
+import Icon from 'ol/style/Icon';
+import Style from 'ol/style/Style';
 
 function MapWrapper() {
 
@@ -107,13 +111,23 @@ function MapWrapper() {
   // initialize map on first render - logic formerly put into componentDidMount
   useEffect( () => {
     // create and add vector source layer
-    let initalFeaturesLayer :any;
+    let initialFeaturesLayer :any;
     
-    let source =  new VectorSource()
+    let source =  new VectorSource({features:[
+      new Feature({
+        geometry: new Point([-8836997.589082308,5412152.494365218]),
+        type:"drone"
+      })]})
     
-    initalFeaturesLayer = new VectorLayer({
-      source: source,
-    })
+      initialFeaturesLayer = new VectorLayer({
+        source: source,
+        style: new Style({
+          image: new Icon({
+            src: '/drone/drone-image.png',
+            scale: 0.10
+          })
+        })
+      });
     
     // create map
     const initialMap = new Map({
@@ -133,7 +147,7 @@ function MapWrapper() {
           })
         }),
 
-        initalFeaturesLayer
+        initialFeaturesLayer
         
       ],
       view: new View({
@@ -149,7 +163,7 @@ function MapWrapper() {
 
     // save map and vector layer references to state
     setMap(initialMap)
-    setFeaturesLayer(initalFeaturesLayer)
+    setFeaturesLayer(initialFeaturesLayer)
 
     return () => {
       initialMap.setTarget(undefined);
