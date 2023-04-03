@@ -179,6 +179,7 @@ function MapWrapper() {
 
     // Define the style function as a callback function
     const getFeatureStyle = (feature : any) => {
+      console.log(styles[feature.get('type')]);
       return styles[feature.get('type')];
     };
     featureLayer.setStyle(getFeatureStyle);

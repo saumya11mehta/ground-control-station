@@ -4,7 +4,7 @@ import MainPanel  from '../../components/MainPanel';
 import FlyPanel  from '../../components/FlyPanel';
 import { useCallback, useEffect, useState } from 'react';
 import Feature from 'ol/Feature';
-import { Geometry, Point } from 'ol/geom';
+import { Geometry, LineString, Point } from 'ol/geom';
 import Polyline from 'ol/format/Polyline';
 import { routesAtom,featuresAtom,stylesAtom, polylineAtom } from "../../atoms/atoms";
 import { useAtom, useAtomValue } from 'jotai';
@@ -68,19 +68,21 @@ export default function MapPage() {
     }, [setStyles]);
 
     useEffect(()=>{
-        const path = new Polyline({
-          factor: 1e6,
-        }).readGeometry(polyline, {
-          dataProjection: 'EPSG:3857',
-          featureProjection: 'EPSG:3857',
-        });
+        const path = new Polyline();
 
         const routeFeature = new Feature({
-          type: 'route',
-          geometry: path,
+          type: 'dronePath',
+          geometry: new LineString(polyline),
         });
         addPolylineFeatureElement(routeFeature) 
-    },[addPolylineFeatureElement, polyline])
+        addStyleElement({
+          'dronePath': new Style({
+            stroke: new Stroke({
+              width: 6,
+              color: [237, 212, 0, 0.8],
+            }),
+          })})
+    },[addPolylineFeatureElement, addStyleElement, polyline])
 
 
     useEffect( () => {    
