@@ -4,14 +4,16 @@ import { transform } from 'ol/proj'
 import { Coordinate } from 'ol/coordinate';
 import {FiUpload,FiPlusCircle} from 'react-icons/fi';
 import {AiOutlineCloudDownload} from 'react-icons/ai';
-import {flyAtom,takeOffPlanAtom,waypointPlanAtom, routesAtom} from "../atoms/atoms";
+import {flyAtom,takeOffPlanAtom,waypointPlanAtom, routesAtom, poiPlanAtom, poisAtom} from "../atoms/atoms";
 import {useAtom} from 'jotai';
 
 function FlyPanel(){
     const [fly,setFly] = useAtom(flyAtom);
     const [takeOffPlan,setTakeOffPlan] = useAtom(takeOffPlanAtom);
     const [waypointPlan,setWaypointPlan] = useAtom(waypointPlanAtom);
+    const [poiPlan,setPoiPlan] = useAtom(poiPlanAtom);
     const [routes,setRoutes] = useAtom(routesAtom);
+    const [pois,setPois] = useAtom(poisAtom);
 
     function navigateToMain() {
         setFly(true);
@@ -25,6 +27,11 @@ function FlyPanel(){
     function handleWaypoint(){
         setTakeOffPlan(false);
         setWaypointPlan(true);
+    }
+    function handlePOI(){
+        setPoiPlan(true);
+        setTakeOffPlan(false);
+        setWaypointPlan(false);
     }
     function downloadCSV(data: any[], filename: string) {
         const header = [["Route Names","Route Type","Longitude","Latitude"].join(","),""].join("\n");
@@ -66,7 +73,12 @@ function FlyPanel(){
                             </button>
                         </div>
                         <div className="text-white flex flex-col items-center justify-center text-center">
-                            <button className="flex flex-col items-center justify-center text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-xs px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 w-20" onClick={()=>{downloadCSV(routes,"routes")}}>
+                            <button className="flex flex-col items-center justify-center text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-xs px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 w-20" onClick={handlePOI}>
+                                <FiPlusCircle className="text-xl"/> POI
+                            </button>
+                        </div>
+                        <div className="text-white flex flex-col items-center justify-center text-center">
+                            <button className="flex flex-col items-center justify-center text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-xs px-5 py-2.5 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 w-20" onClick={()=>{downloadCSV([...routes,...pois],"routes")}}>
                                 <AiOutlineCloudDownload className="text-xl"/> Download Routes
                             </button>
                         </div>

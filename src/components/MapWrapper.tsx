@@ -11,7 +11,7 @@ import OSM,{ ATTRIBUTION } from 'ol/source/OSM'
 import { transform } from 'ol/proj'
 import { Coordinate } from 'ol/coordinate';
 import Geometry from 'ol/geom/Geometry';
-import { takeOffPlanAtom , waypointPlanAtom , routesAtom, stylesAtom, featuresAtom} from "../atoms/atoms";
+import { takeOffPlanAtom , waypointPlanAtom , routesAtom, stylesAtom, featuresAtom, poiPlanAtom, poisAtom} from "../atoms/atoms";
 import { useAtom, useAtomValue } from 'jotai';
 import { Feature } from 'ol';
 import { Point } from 'ol/geom';
@@ -24,10 +24,11 @@ function MapWrapper() {
   const [ map, setMap ] = useState<Map>()
   const [center, setCenter] = useState([-8836997.589082308,5412152.494365218]);
   const [ featuresLayer, setFeaturesLayer ] = useState<VectorLayer<VectorSource<Geometry>>>()
-  const [ selectedCoord , setSelectedCoord ] = useState<Coordinate>()
   const takeOffPlan = useAtomValue(takeOffPlanAtom);
   const waypointPlan = useAtomValue(waypointPlanAtom);
+  const poiPlan = useAtomValue(poiPlanAtom);
   const [routes, setRoutes] = useAtom(routesAtom);
+  const [pois, setPois] = useAtom(poisAtom);
   const features = useAtomValue(featuresAtom);
   const styles = useAtomValue(stylesAtom);
 
@@ -43,6 +44,10 @@ function MapWrapper() {
       setRoutes((prevRoutes) => [...prevRoutes, data]);    
   },[setRoutes]);
 
+  //add to poi data 
+  const  addPoiElement = useCallback((data:{id: string, routeType: string, coordinate: Coordinate}) => {
+    setPois((prevPois) => [...prevPois, data]);    
+  },[setPois]);
 
   //add to take off data to routes
   const  addTakeOffData = useCallback((coordinate: Coordinate ) => {
@@ -75,6 +80,25 @@ function MapWrapper() {
     }
   },[addRouteElement, routes]);
 
+  //add to poi data to pois
+  const  addPoiData = useCallback((coordinate: Coordinate ) => {
+    const existingPois = pois.filter((data) => data.routeType === "POI");
+
+    let newId;
+    if (existingPois.length > 0) {
+      const lastWaypoint = existingPois[existingPois.length - 1];
+      newId =  parseInt(lastWaypoint.id as string, 10) + 1;
+    } else {
+      newId = "1";
+    }
+    let routeData = {
+      id: newId.toString(),
+      routeType: 'POI',
+      coordinate: coordinate,
+    };
+    addPoiElement(routeData);
+  },[addPoiElement, pois]);
+
   const hasTakeoffRoute = useCallback(() => {
     return routes.some(obj => obj.routeType === 'takeoff');
   },[routes]);
@@ -86,14 +110,7 @@ function MapWrapper() {
   // map click handler
   const handleMapClick = useCallback((event : any) => {
     // get clicked coordinate using mapRef to access current React state inside OpenLayers callback
-    //  https://stackoverflow.com/a/60643670
     const clickedCoord = mapRef.current?.getCoordinateFromPixel(event.pixel);
-
-    // transform coord to EPSG 4326 standard Lat Long
-    const transformedCoord = transform(clickedCoord!, 'EPSG:3857', 'EPSG:4326')
-
-    // set React state
-    setSelectedCoord( transformedCoord )
 
     if (takeOffPlan) {
       if(!hasTakeoffRoute()){
@@ -105,8 +122,10 @@ function MapWrapper() {
       }else{
         addWaypointData(clickedCoord!);
       }
+    }else if (poiPlan){
+      addPoiData(clickedCoord!);
     }
-  }, [addTakeOffData, addWaypointData, hasTakeoffRoute, takeOffPlan, waypointPlan]);
+  }, [addPoiData, addTakeOffData, addWaypointData, hasTakeoffRoute, poiPlan, takeOffPlan, waypointPlan]);
 
   // initialize map on first render - logic formerly put into componentDidMount
   useEffect( () => {

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Feature from 'ol/Feature';
 import { Geometry, LineString, Point } from 'ol/geom';
 import Polyline from 'ol/format/Polyline';
-import { routesAtom,featuresAtom,stylesAtom, polylineAtom } from "../../atoms/atoms";
+import { routesAtom,featuresAtom,stylesAtom, polylineAtom, poisAtom } from "../../atoms/atoms";
 import { useAtom, useAtomValue } from 'jotai';
 import Style from 'ol/style/Style';
 import CircleStyle from 'ol/style/Circle';
@@ -19,6 +19,7 @@ import RobotControlWidget from '@/components/RobotControlWidget';
 
 export default function MapPage() {
     const routes = useAtomValue(routesAtom);
+    const pois = useAtomValue(poisAtom);
     const [features, setFeatures] = useAtom(featuresAtom);
     const [styles, setStyles] = useAtom(stylesAtom);
     const [polyline] = useAtom(polylineAtom);
@@ -123,7 +124,45 @@ export default function MapPage() {
       }
 
 
-  },[addFeatureElement, addStyleElement, routes]);
+    },[addFeatureElement, addStyleElement, routes]);
+
+    useEffect( () => {    
+      const data = pois[pois.length-1];
+      if(data !== undefined){
+        const style = { 
+          ['poi_'+data.id]: new Style({
+            image: new CircleStyle({
+              radius: 10,
+              fill: new Fill({color: 'green'}),
+              stroke: new Stroke({
+                color: 'white',
+                width: 2,
+              }),
+            }),
+            text: new Text({
+              textAlign: "center",
+              textBaseline: "middle",
+              font: 'Normal 12px Arial',
+              text: "POI "+data.id,
+              fill: new Fill({
+                color: '#ffa500'
+              }),
+              stroke: new Stroke({
+                color: '#000000',
+                width: 3
+              }),
+              
+            })
+          }),
+        };
+        addStyleElement(style);
+        const feature = new Feature({ 
+          type: "poi_"+data.id,
+          geometry: new Point(data.coordinate),
+        });
+        addFeatureElement(feature);
+      }
+    },[addFeatureElement, addStyleElement, pois]);
 
   return (
     <>
