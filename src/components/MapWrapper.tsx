@@ -23,6 +23,7 @@ function MapWrapper() {
   // set intial state
   const [ map, setMap ] = useState<Map>()
   const [center, setCenter] = useState([-8836997.589082308,5412152.494365218]);
+  const [zoom, setZoom] = useState(12);
   const [ featuresLayer, setFeaturesLayer ] = useState<VectorLayer<VectorSource<Geometry>>>()
   const takeOffPlan = useAtomValue(takeOffPlanAtom);
   const waypointPlan = useAtomValue(waypointPlanAtom);
@@ -125,7 +126,26 @@ function MapWrapper() {
     }else if (poiPlan){
       addPoiData(clickedCoord!);
     }
+    const currentMap = mapRef.current;
+    if (currentMap) {
+      const view = currentMap.getView();
+      if(view){
+        setCenter(view?.getCenter()!);
+        setZoom(view?.getZoom()!)
+      }
+    }
   }, [addPoiData, addTakeOffData, addWaypointData, hasTakeoffRoute, poiPlan, takeOffPlan, waypointPlan]);
+
+  useEffect( () => {
+    const currentMap = mapRef.current;
+    if (currentMap) {
+      const view = currentMap.getView();
+      if(view){
+        setCenter(view?.getCenter()!);
+        setZoom(view?.getZoom()!)
+      }
+    }
+  },[takeOffPlan,poiPlan,waypointPlan])
 
   // initialize map on first render - logic formerly put into componentDidMount
   useEffect( () => {
@@ -172,7 +192,7 @@ function MapWrapper() {
       view: new View({
         projection: 'EPSG:3857',
         center: center,
-        zoom: 12
+        zoom: zoom
       }),
       controls: []
     })
@@ -188,7 +208,7 @@ function MapWrapper() {
       initialMap.setTarget(undefined);
       initialMap.un('click', handleMapClick);
     };
-  },[center, features, handleMapClick, styles]);
+  },[center, handleMapClick, zoom]);
 
   useEffect(() => {
     // Create the VectorLayer and add it to the map only once

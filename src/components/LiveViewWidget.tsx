@@ -12,7 +12,7 @@ const LiveViewWidget: React.FC = () => {
   };
 
   return (
-    <div className={`bg-gray-300 w-full ${isMinimized ? 'h-12' : 'h-64'} flex flex-col`}>
+    <div className={`bg-gray-300 w-full ${isMinimized ? 'h-12' : 'h-64'} flex flex-col z-20`}>
       <div className="flex justify-between items-center bg-gray-400 px-4 py-2">
         <p className="text-gray-700 font-bold">Live View</p>
         <div className="flex items-center">
