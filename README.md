@@ -187,7 +187,7 @@ At the main folder execute the following command in console to run the developme
 <!-- Contact -->
 ## :handshake: Contact
 
-Saumya Mehta
+Saumya Mehta : [Linked In](https://www.linkedin.com/in/saumya-raghuvir-mehta/)
 
 Project Link: [https://github.com/saumya11mehta/ground-control-station](https://github.com/saumya11mehta/ground-control-station)
 
